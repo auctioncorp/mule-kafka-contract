@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<flow name="kafka-sfdc-contract-inboundFlow" doc:id="49287344-f6ba-4ac6-b002-90e42d95a477" >
+		<kafka:message-listener doc:name="Message listener" doc:id="652ca685-fbea-45f6-9791-f4a0172bc4df" config-ref="Apache_Kafka_Consumer_configuration"/>
+		<java:invoke doc:name="Invoke" doc:id="8ba49307-8b4e-47bd-9e7c-a2e5ed26eaed" instance="#[payload]" class="com.auction.sfdc.contract.transform.ContractDeserialization" method="transformMessage(MuleMessage, String)"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c4ddec9b-2be4-4d06-b651-1fc17536a53b" message="#[payload]"/>
+	</flow>
+</mule>
