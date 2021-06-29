@@ -1,0 +1,670 @@
+{
+  "type" : "record",
+  "name" : "OfferAuditLogMessage",
+  "namespace" : "com.tenx.resi.ms.contract.api.message.offer",
+  "fields" : [ {
+    "name" : "offer",
+    "type" : {
+      "type" : "record",
+      "name" : "OfferMessage",
+      "fields" : [ {
+        "name" : "offerId",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "propertyId",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "listingId",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "eventId",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "redcId",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "status",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "propertyViewedFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "buyers",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "BuyerMessage",
+            "fields" : [ {
+              "name" : "buyerId",
+              "type" : [ "null", "long" ],
+              "default" : null
+            }, {
+              "name" : "buyerParty",
+              "type" : [ "null", {
+                "type" : "record",
+                "name" : "PartyMessage",
+                "fields" : [ {
+                  "name" : "partyId",
+                  "type" : [ "null", "long" ],
+                  "default" : null
+                }, {
+                  "name" : "partyType",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "participantType",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "firstName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "lastName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "middleName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "noMiddleName",
+                  "type" : [ "null", "boolean" ],
+                  "default" : null
+                }, {
+                  "name" : "dob",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "companyName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "addressType",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "streetNumber",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "streetName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "streetUnit",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "city",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "state",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "postalCode",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "emailAddress",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "phoneType",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "phoneNumber",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "licenseNumber",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "licenseState",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "licenseType",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                } ]
+              } ],
+              "default" : null
+            }, {
+              "name" : "maritalStatus",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "primaryFlag",
+              "type" : [ "null", "boolean" ],
+              "default" : null
+            }, {
+              "name" : "isInternationalBuyer",
+              "type" : "boolean"
+            }, {
+              "name" : "isSpouseOnContract",
+              "type" : [ "null", "boolean" ],
+              "default" : null
+            }, {
+              "name" : "spouseName",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "spouseEmailAddress",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "spouseMaritalStatus",
+              "type" : [ "null", "string" ],
+              "default" : null
+            } ]
+          },
+          "java-class" : "java.util.List"
+        } ],
+        "default" : null
+      }, {
+        "name" : "owningEntity",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "PropertyOwnershipMessage",
+          "fields" : [ {
+            "name" : "propertyOwnershipEntityId",
+            "type" : [ "null", "long" ],
+            "default" : null
+          }, {
+            "name" : "entityType",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entitySubType",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityName",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityState",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "signatures",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : {
+                "type" : "record",
+                "name" : "OwnershipSignatureMessage",
+                "fields" : [ {
+                  "name" : "ownershipSignatureId",
+                  "type" : [ "null", "long" ],
+                  "default" : null
+                }, {
+                  "name" : "signorNameTitle",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "signerName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "signerTitle",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "signerTitleOther",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "managingCompanyName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "trustDate",
+                  "type" : [ "null", {
+                    "type" : "record",
+                    "name" : "Date",
+                    "namespace" : "java.util",
+                    "fields" : [ ]
+                  } ],
+                  "default" : null
+                }, {
+                  "name" : "sortOrder",
+                  "type" : [ "null", "double" ],
+                  "default" : null
+                } ]
+              },
+              "java-class" : "java.util.List"
+            } ],
+            "default" : null
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "lender",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "LenderMessage",
+          "fields" : [ {
+            "name" : "lenderId",
+            "type" : [ "null", "long" ],
+            "default" : null
+          }, {
+            "name" : "lenderParty",
+            "type" : [ "null", "PartyMessage" ],
+            "default" : null
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "escrowCompany",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "EscrowCompanyMessage",
+          "fields" : [ {
+            "name" : "escrowCompanyId",
+            "type" : [ "null", "long" ],
+            "default" : null
+          }, {
+            "name" : "escrowCompanyParty",
+            "type" : [ "null", "PartyMessage" ],
+            "default" : null
+          }, {
+            "name" : "escrowCompanyContact",
+            "type" : [ "null", "PartyMessage" ],
+            "default" : null
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "agent",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "AgentMessage",
+          "fields" : [ {
+            "name" : "agentId",
+            "type" : [ "null", "long" ],
+            "default" : null
+          }, {
+            "name" : "agentParty",
+            "type" : [ "null", "PartyMessage" ],
+            "default" : null
+          }, {
+            "name" : "agentFirm",
+            "type" : [ "null", "PartyMessage" ],
+            "default" : null
+          }, {
+            "name" : "brokerCoOpFlag",
+            "type" : [ "null", "boolean" ],
+            "default" : null
+          }, {
+            "name" : "brokerCommission",
+            "type" : [ "null", {
+              "type" : "string",
+              "java-class" : "java.math.BigDecimal"
+            } ],
+            "default" : null
+          }, {
+            "name" : "isAgentLicenseValidated",
+            "type" : "boolean"
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "entityProfile",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "StakeholderMessage",
+          "fields" : [ {
+            "name" : "stakeholderId",
+            "type" : [ "null", "long" ],
+            "default" : null
+          }, {
+            "name" : "stakeholders",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : "StakeholderMessage",
+              "java-class" : "java.util.List"
+            } ],
+            "default" : null
+          }, {
+            "name" : "signers",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : {
+                "type" : "record",
+                "name" : "SignerMessage",
+                "fields" : [ {
+                  "name" : "signerId",
+                  "type" : [ "null", "long" ],
+                  "default" : null
+                }, {
+                  "name" : "signerName",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "signerTitle",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "signerTitleOther",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "percentStake",
+                  "type" : [ "null", {
+                    "type" : "string",
+                    "java-class" : "java.math.BigDecimal"
+                  } ],
+                  "default" : null
+                }, {
+                  "name" : "isSigner",
+                  "type" : "boolean"
+                }, {
+                  "name" : "signerEmail",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                } ]
+              },
+              "java-class" : "java.util.List"
+            } ],
+            "default" : null
+          }, {
+            "name" : "entityName",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityType",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entitySubType",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityState",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityDate",
+            "type" : [ "null", "java.util.Date" ],
+            "default" : null
+          }, {
+            "name" : "entityTitle",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "entityTitleOtherDesc",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "percentStake",
+            "type" : [ "null", {
+              "type" : "string",
+              "java-class" : "java.math.BigDecimal"
+            } ],
+            "default" : null
+          }, {
+            "name" : "isMoreEntityInvolved",
+            "type" : "boolean"
+          }, {
+            "name" : "isMoreSignerInvolved",
+            "type" : "boolean"
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "firstTimeBuyerFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "licensedAgentFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "relatedToOwnerFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "previousMortgagorFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "homestepsAgentBrokerFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "freddieHomestepsEmployeeFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "freddieHomestepsEmployeeRelativeFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "freddieHomestepsVendorFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "freddieHomestepsManagerFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "priorFnmaPurchaseFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "priorFreddiePurchaseFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "percentComplete",
+        "type" : [ "null", {
+          "type" : "string",
+          "java-class" : "java.math.BigDecimal"
+        } ],
+        "default" : null
+      }, {
+        "name" : "currentPage",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "titleInsuranceFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "sellerEscrowCompanyFlag",
+        "type" : [ "null", "boolean" ],
+        "default" : null
+      }, {
+        "name" : "sellerEscrowCompanyName",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "vestingType",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "communicationMethod",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "communicationTime",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "fundingType",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "fundingTypeOtherDesc",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "purchaseType",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "realEstateAgentType",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "winningBidAmount",
+        "type" : [ "null", {
+          "type" : "string",
+          "java-class" : "java.math.BigDecimal"
+        } ],
+        "default" : null
+      }, {
+        "name" : "winningBidUser",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "winningBidTime",
+        "type" : [ "null", {
+          "type" : "string",
+          "java-class" : "java.time.Instant",
+          "logicalType" : "Instant"
+        } ],
+        "default" : null
+      }, {
+        "name" : "soldTime",
+        "type" : [ "null", {
+          "type" : "string",
+          "java-class" : "java.time.Instant",
+          "logicalType" : "Instant"
+        } ],
+        "default" : null
+      }, {
+        "name" : "isMoreBuyerInvolved",
+        "type" : "boolean"
+      }, {
+        "name" : "offerValidation",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "OfferValidationMessage",
+          "fields" : [ {
+            "name" : "offerValidationStatus",
+            "type" : [ "null", {
+              "type" : "string",
+              "java-class" : "com.tenx.resi.ms.contract.api.dto.OfferValidationStatus",
+              "logicalType" : "OfferValidationStatus"
+            } ],
+            "default" : null
+          }, {
+            "name" : "offerValidationChecklist",
+            "type" : [ "null", {
+              "type" : "record",
+              "name" : "OfferValidationChecklistMessage",
+              "fields" : [ {
+                "name" : "missingDocuments",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : "string",
+                  "java-class" : "java.util.List"
+                } ],
+                "default" : null
+              }, {
+                "name" : "listingAgentInfoMissing",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "freddieMacValidationsFailing",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "fannieMaeValidationsFailing",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "isMoreBuyerInvolved",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "isMoreEntityInvolved",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "isMoreSignerInvolved",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "isInternationalBuyerInvolved",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "agentLicenseFollowup",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "legalDescriptionMissing",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "isLegacyIntegration",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "addendumFileSizeLimitExceeded",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "missingClosingCompanyFields",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : "string",
+                  "java-class" : "java.util.List"
+                } ],
+                "default" : null
+              }, {
+                "name" : "mlhSyncError",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              }, {
+                "name" : "contractGenerationError",
+                "type" : [ "null", "boolean" ],
+                "default" : null
+              } ]
+            } ],
+            "default" : null
+          } ]
+        } ],
+        "default" : null
+      } ]
+    }
+  }, {
+    "name" : "action",
+    "type" : {
+      "type" : "string",
+      "java-class" : "com.tenx.resi.ms.contract.api.message.offer.OfferAction",
+      "logicalType" : "OfferAction"
+    }
+  }, {
+    "name" : "clientId",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "updatedDate",
+    "type" : [ "null", {
+      "type" : "string",
+      "java-class" : "java.time.Instant",
+      "logicalType" : "Instant"
+    } ],
+    "default" : null
+  }, {
+    "name" : "updatedBy",
+    "type" : [ "null", "long" ],
+    "default" : null
+  } ]
+}

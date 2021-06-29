@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
-http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="kafka-sfdc-contract-inboundFlow" doc:id="49287344-f6ba-4ac6-b002-90e42d95a477" >
-		<kafka:message-listener doc:name="Message listener" doc:id="652ca685-fbea-45f6-9791-f4a0172bc4df" config-ref="Apache_Kafka_Consumer_configuration"/>
+		<kafka:message-listener doc:name="Message listener" doc:id="652ca685-fbea-45f6-9791-f4a0172bc4df" config-ref="Apache_Kafka_Consumer_configuration" ackMode="AUTO"/>
 		<logger level="INFO" doc:name="Logger" doc:id="00110947-e466-4aaa-a2be-6cf27cd3c382" message="STARTED"/>
+		<ee:transform doc:name="Transform Message" doc:id="b01476c6-201f-44a8-a392-f555c25f30cc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/avro schemaUrl="classpath://Contract.json"
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<java:new doc:name="New Deserializator" doc:id="cf5430ac-47f7-4023-8232-30ba0ba5403d" class="com.auction.sfdc.contract.transform.ContractDeserialization" constructor="ContractDeserialization()" target="contractDeserialization"/>
-		<java:invoke doc:name="Invoke" doc:id="217fc86e-048b-4421-be97-863a86fdf906" class="com.auction.sfdc.contract.transform.ContractDeserialization" instance="#[vars.contractDeserialization]" method="transformMessageCustom(java.io.InputStream, java.lang.String)">
+				<java:invoke doc:name="Invoke" doc:id="81a260d7-14c3-443c-b1bc-fd8dc97f6bbb" instance="#[vars.contractDeserialization]" class="com.auction.sfdc.contract.transform.ContractDeserialization" method="transformMessageCustom(java.io.InputStream,java.lang.String)">
 			<java:args ><![CDATA[#[{
 	message : payload,
 	outputEncoding : ""

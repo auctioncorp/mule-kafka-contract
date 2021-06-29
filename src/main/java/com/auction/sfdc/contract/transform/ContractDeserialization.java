@@ -15,14 +15,14 @@ import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractMessageTransformer;
 
-import com.auction.sfdc.contract.avro.ContractPayload;
+import com.tenx.resi.ms.contract.api.message.offer.OfferAuditLogMessage;
 
 public class ContractDeserialization  extends AbstractMessageTransformer{
 	
 	public ContractDeserialization() {}
 
 
-	public Object transformMessage(MuleMessage message, String outputEncoding)
+	/*public Object transformMessage(MuleMessage message, String outputEncoding)
             throws TransformerException {
         FileInputStream stream = (FileInputStream) message.getPayload();
 
@@ -49,11 +49,11 @@ public class ContractDeserialization  extends AbstractMessageTransformer{
         message.setPayload(allUsers);
 
         return message;
-    }
+    }*/
 
-	public List<ContractPayload> transformMessageCustom(InputStream message, String outputEncoding){
+	public List<OfferAuditLogMessage> transformMessageCustom(InputStream message, String outputEncoding){
 
-        List<ContractPayload> allUsers = new ArrayList<ContractPayload>();
+        List<OfferAuditLogMessage> allUsers = new ArrayList<OfferAuditLogMessage>();
         
         //RawMessageDecoder<ContractPayload> bDecoder = new RawMessageDecoder<ContractPayload>(new org.apache.avro.specific.SpecificData(), ContractPayload.SCHEMA$);
         try {
@@ -63,8 +63,8 @@ public class ContractDeserialization  extends AbstractMessageTransformer{
         	byte[] targetArray = new byte[message.available()];
             message.read(targetArray);
             Decoder decoder = DecoderFactory.get().binaryDecoder((byte[]) targetArray, null);
-            DatumReader<ContractPayload> reader = new SpecificDatumReader<ContractPayload>(ContractPayload.getClassSchema());
-            ContractPayload cp = reader.read(null , decoder);
+            DatumReader<OfferAuditLogMessage> reader = new SpecificDatumReader<OfferAuditLogMessage>(OfferAuditLogMessage.getClassSchema());
+            OfferAuditLogMessage cp = reader.read(null , decoder);
         	allUsers.add(cp);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -72,5 +72,12 @@ public class ContractDeserialization  extends AbstractMessageTransformer{
 		}
         return allUsers;
     }
+
+
+	@Override
+	public Object transformMessage(MuleMessage arg0, String arg1) throws TransformerException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

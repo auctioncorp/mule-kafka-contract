@@ -12,18 +12,6 @@ http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sft
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
 
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="404ca981-fc2d-4182-879f-9a8d11ee3006" file="properties/${env}-secure.properties" key="${key}" >
-		<secure-properties:encrypt algorithm="Blowfish" />
-	</secure-properties:config>
-	<configuration-properties doc:name="Configuration properties" doc:id="8fa57db5-5a6a-42cd-a24b-1813a74bc191" file="properties/${env}.properties" />
-	<configuration-properties doc:name="Configuration properties" doc:id="ba626065-47d2-4f05-8087-154f33d8fa2c" file="properties/logging.yaml" />
-	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="c918f861-504c-4350-9226-5a6a945c3ec4" >
-		<salesforce:basic-connection username="${sfdc.username}" password="${secure::sfdc.password}" securityToken="${sfdc.securityToken}" url="${sfdc.url}" >
-			<reconnection >
-				<reconnect-forever frequency="10000" />
-			</reconnection>
-		</salesforce:basic-connection>
-	</salesforce:sfdc-config>
 	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="aafaefe4-4f42-4dbc-b39f-ec095e7a0fb1" >
 		<kafka:consumer-plaintext-connection >
 			<kafka:bootstrap-servers >
