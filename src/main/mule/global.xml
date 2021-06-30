@@ -31,7 +31,6 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 				<kafka:bootstrap-server value="b-2.ci.glwiz1.c2.kafka.us-west-2.amazonaws.com:9092" />
 			</kafka:bootstrap-servers>
 			<kafka:topic-patterns >
-				<kafka:topic-pattern value="resi-contacts" />
 				<kafka:topic-pattern value="resi-offers" />
 			</kafka:topic-patterns>
 		</kafka:consumer-plaintext-connection>
