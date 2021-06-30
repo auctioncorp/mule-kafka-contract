@@ -1,4 +1,4 @@
-# mule-message-manager
+# mule-kafka-contract
 
 > 
 
@@ -14,7 +14,7 @@
 <https://anypoint.mulesoft.com/cloudhub/#/console/home/applications/>  CI
 
 
-Handles any outbound SFDC Platform Events related to Campaign data. It contains several flows with each flow responsible for listening to a specific platform event url. Each flow within the app will handle errors using its own error handler.
+Handles all inbound Morpheus massages placed on the resi-contracts and resi-offers Kafka topics. It contains 2 flows with each flow responsible for listening to a specific Kafka topic. 
 
 ## Flows
 
