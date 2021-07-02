@@ -27,12 +27,35 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="aafaefe4-4f42-4dbc-b39f-ec095e7a0fb1" >
 		<kafka:consumer-plaintext-connection >
 			<kafka:bootstrap-servers >
-				<kafka:bootstrap-server value="b-1.ci.glwiz1.c2.kafka.us-west-2.amazonaws.com:9092" />
-				<kafka:bootstrap-server value="b-2.ci.glwiz1.c2.kafka.us-west-2.amazonaws.com:9092" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.2}" />
 			</kafka:bootstrap-servers>
 			<kafka:topic-patterns >
 				<kafka:topic-pattern value="resi-offers" />
 			</kafka:topic-patterns>
 		</kafka:consumer-plaintext-connection>
 	</kafka:consumer-config>
+		<kafka:consumer-config name="Apache_Kafka_Consumer_configuration_Contract" doc:name="Apache Kafka Consumer configuration Contract" doc:id="17badd21-70ea-433c-8cc6-2848c58f9bb5" >
+		<kafka:consumer-plaintext-connection >
+			<kafka:bootstrap-servers >
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.2}" />
+			</kafka:bootstrap-servers>
+			<kafka:topic-patterns >
+				<kafka:topic-pattern value="resi-contracts" />
+			</kafka:topic-patterns>
+		</kafka:consumer-plaintext-connection>
+	</kafka:consumer-config>
+	
+	<http:request-config name="Salesforce_HTTP_Config" doc:name="HTTP Request configuration" doc:id="f5faf7ad-12ad-4079-b035-fdcdb1366973" responseTimeout="90000">
+		<http:request-connection host="${salesforce.token.url}" protocol="HTTPS"/>
+		<http:default-headers >
+			<http:default-header key="Authorization" value="#[vars.AccessToken]" />
+		</http:default-headers>
+	</http:request-config>
+	
+	<http:request-config name="Salesforce_Token" doc:name="HTTP Request configuration" doc:id="bfbb3c12-b789-4ecd-b822-fd50b22d568b" responseTimeout="90000">
+		<http:request-connection host="${salesforce.token.url}" protocol="HTTPS" usePersistentConnections="false"/>
+	</http:request-config>	
+	
 </mule>
