@@ -47,15 +47,15 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 		</kafka:consumer-plaintext-connection>
 	</kafka:consumer-config>
 	
-	<http:request-config name="Salesforce_HTTP_Config" doc:name="HTTP Request configuration" doc:id="f5faf7ad-12ad-4079-b035-fdcdb1366973" responseTimeout="90000">
-		<http:request-connection host="${salesforce.token.url}" protocol="HTTPS"/>
+	<http:request-config name="Salesforce_HTTP_Config" doc:name="Salesforce_HTTP_Config" doc:id="f5faf7ad-12ad-4079-b035-fdcdb1366973" responseTimeout="90000">
+		<http:request-connection protocol="HTTPS"/>
 		<http:default-headers >
 			<http:default-header key="Authorization" value="#[vars.AccessToken]" />
 		</http:default-headers>
 	</http:request-config>
 	
-	<http:request-config name="Salesforce_Token" doc:name="HTTP Request configuration" doc:id="bfbb3c12-b789-4ecd-b822-fd50b22d568b" responseTimeout="90000">
-		<http:request-connection host="${salesforce.token.url}" protocol="HTTPS" usePersistentConnections="false"/>
+	<http:request-config name="Salesforce_Token" doc:name="Salesforce_Token" doc:id="bfbb3c12-b789-4ecd-b822-fd50b22d568b" responseTimeout="90000">
+		<http:request-connection usePersistentConnections="false" protocol="HTTPS" host="${salesforce.token.host}"/>
 	</http:request-config>	
 	
 </mule>

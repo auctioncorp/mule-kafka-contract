@@ -14,11 +14,11 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<global-property doc:name="Global Property" doc:id="17fa8993-6a8c-4c62-84ba-774ee01b3bde" name="key" value="apisero" />
 	<os:object-store name="Token_object_store" doc:name="Object store" doc:id="94b6b011-d7e7-4612-9294-9d00d57ee409" maxEntries="60000" expirationInterval="3200" expirationIntervalUnit="SECONDS" entryTtl="1200"/>
 	<sub-flow name="CallOfferValidationEndpoint" doc:id="c82cabdc-cc07-4205-a33d-920ddfaba667" >
-		<set-variable value="output text/plain --- write(error.errorMessage.payload,'application/json')" doc:name="Set Variable For endpoint direction" doc:id="4fb45d00-3344-48f0-b08c-435bf61abb88" variableName="offerValidation" />
+		<set-variable value="#[vars.offerMapping.status]" doc:name="Set Variable For endpoint direction" doc:id="4fb45d00-3344-48f0-b08c-435bf61abb88" variableName="offerValidation" />
 		<try doc:name="Try" doc:id="061bbf2f-d1ab-4d11-aa35-8cec52246a09" >
 			<choice doc:name="Choice" doc:id="6d925c60-2a0c-4c60-9b4f-84f85ab321cb">
-			<when expression='offerValidation = "Validation"'>
-				<http:request method="POST" doc:name="POST to Salesforce Offer Contract" doc:id="d1659eee-fda9-445a-aa14-2db335c222a8" config-ref="Salesforce_HTTP_Config" path="/adc/v1/offer" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER">
+			<when expression="#[(vars.offerMapping.status != null) and (['REVIEW', 'COMPLETE', 'CONTRACT_SENT', 'CONTRACT_RECEIVED'] contains (vars.offerMapping.status))]">
+				<http:request method="POST" doc:name="POST to Salesforce Offer Contract" doc:id="d1659eee-fda9-445a-aa14-2db335c222a8" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/adc/v1/offer"]'>
 					<http:body><![CDATA[#[%dw 2.0
 				output application/json indent=false
 				---
@@ -32,15 +32,16 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 				<logger level="INFO" doc:name="Log JSON message result" doc:id="aa84bf31-7fe0-4dd0-8fa8-8ba0e40c62de" message="#[payload]" />
 			</when>
 			<otherwise>
-				<http:request method="POST" doc:name="POST to Salesforce Offer Validation" doc:id="dcb6fe90-e150-469f-a6a1-3e60874b5ccf" config-ref="Salesforce_HTTP_Config" path="/adc/v1/offer" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER">
+				<http:request method="POST" doc:name="POST to Salesforce Offer Validation" doc:id="dcb6fe90-e150-469f-a6a1-3e60874b5ccf" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/services/apexrest/adc/v1/offer"]'>
 					<http:body><![CDATA[#[%dw 2.0
-				output application/json indent=false
-				---
-				read(payload.data.payload.Request_Body__c,"application/json")]]]></http:body>
+output application/json indent=false
+---
+vars.offerMapping]]]></http:body>
 					<http:headers><![CDATA[#[output application/java
 				---
 				{
-					"Content-Type" : "application/json"
+					"Content-Type" : "application/json",
+					"Authorization" : "Bearer " ++ vars.SFDCTokenInfo.access_token
 				}]]]></http:headers>
 				</http:request>
 				<logger level="INFO" doc:name="Log JSON message result" doc:id="95aad9a7-9d52-4635-a818-a61e9c1e9ee6" message="#[payload]" />
@@ -55,9 +56,9 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	</sub-flow>
 	<sub-flow name="getSalesforceToken" doc:id="9900e7df-956b-4482-8c25-b2983a70cb32">
 			<choice doc:name="Choice" doc:id="20d0b662-71e6-4345-a0b0-19c34f7dd40b">
-				<when expression='#[vars.AccessToken == "null"]'>
-					<http:request method="POST" doc:name="Access Token Request" doc:id="445d9fe5-ae18-4d51-b1f1-3a6788157856" outputMimeType="application/json" path="/services/uaa/oauth/token" target="AccessToken" targetValue='#["Bearer " ++ payload.access_token]' config-ref="Salesforce_Token">
-				<http:body><![CDATA[#[output application/x-www-form-urlencoded --- {'grant_type':'password', 'client_id':'${salesforce.client}', 'client_secret':'${salesforce.secret}', 'username':'${salesforce.user}', 'password':'${salesforce.password}'}]]]></http:body>
+				<when expression='#[vars.SFDCTokenInfo == null]'>
+					<http:request method="POST" doc:name="Access Token Request" doc:id="445d9fe5-ae18-4d51-b1f1-3a6788157856" outputMimeType="application/json" target="SFDCTokenInfo" config-ref="Salesforce_Token" path="${salesforce.token.path}">
+				<http:body><![CDATA[#[output application/x-www-form-urlencoded --- {'grant_type':'password', 'client_id':'${sfdc.client}', 'client_secret':'${sfdc.secret}', 'username':'${sfdc.username}', 'password':'${secure::sfdc.password}${sfdc.securityToken}'}]]]></http:body>
 				<http:headers><![CDATA[#[output application/java
 					---
 					{
@@ -65,12 +66,17 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 					}]]]>
 					</http:headers>
 				</http:request>
-					<os:store doc:name="Store Token" doc:id="e4d335ad-fb37-42c1-a5f9-0dd4791716a5" key="morph-token" objectStore="Token_object_store">
-				<os:value><![CDATA[#[vars.AccessToken]]]></os:value>
+					<os:store doc:name="Store Token" doc:id="e4d335ad-fb37-42c1-a5f9-0dd4791716a5" key="salesforce-token" objectStore="Token_object_store">
+				<os:value><![CDATA[#[vars.SFDCTokenInfo]]]></os:value>
 			</os:store>
 				<logger level="INFO" doc:name="Logger" doc:id="a419282e-8e08-4d0a-8dc3-21b2666c0edd" message='#["Token Stored at: " ++ now()]' />
 				
 	</when>
+			<otherwise >
+				<os:retrieve doc:name="Retrieve" doc:id="17611914-8c37-44ab-8b15-eb6d1ecd4d63" key="salesforce-token" objectStore="Token_object_store" target="SFDCTokenInfo">
+					<os:default-value ><![CDATA[#[null]]]></os:default-value>
+				</os:retrieve>
+			</otherwise>
 			</choice>
 		</sub-flow>
 	<flow name="kafka-sfdc-contract-inboundFlow" doc:id="49287344-f6ba-4ac6-b002-90e42d95a477" >
@@ -92,33 +98,26 @@ toHex(myBinary)]'/>
 		</java:invoke-static>
 		<ee:transform doc:name="Convert to JSON" doc:id="b8996879-e884-43d7-b3cf-c0ad92ddd0cf" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="offerMapping" ><![CDATA[%dw 2.0
 output application/json
-var bodyJson  = read ("payload", "application/json")
+var bodyJson  = read (payload, "application/json")
 ---
 {
-    Campaign_Id: payload.data.payload.Campaign_Id__c,
-    Listing_Id: payload.data.payload.Listing_Id__c,
-    LN_UUID_text: payload.data.payload.LN_UUID_text__c,
-    Property_Address: payload.data.payload.Property_Address__c,
-    Property_City: payload.data.payload.Property_City__c,
-    Property_State: payload.data.payload.Property_State__c,
-    Property_Postal_Code: payload.data.payload.Property_Postal_Code__c,
-    Property_County: payload.data.payload.Property_County__c,
-    Servicer: payload.data.payload.Servicer__c,
-    Investor: payload.data.payload.Investor__c,
-    Servicer_System_Status: payload.data.payload.Servicer_System_Status__c,
-    Marketing_Start_Date: payload.data.payload.Marketing_Start_Date__c,
-    Servicer_Total_Estimated_Debt: payload.data.payload.Servicer_Total_Estimated_Debt__c,
-    Record_Updated_Date: payload.data.payload.Record_Updated_Date__c,
-    Product_Portfolio: payload.data.payload.Product_Portfolio__c,
-    Auction_Start_Date_Time: payload.data.payload.Auction_Start_Date_Time__c,
-    Winning_Bid_Amount: payload.data.payload.Winning_Bid_Amount__c,
-    Credit_Bid_Amount: payload.data.payload.Credit_Bid_Amount__c
+    offerId: bodyJson.offer.offerId,
+    redcId: bodyJson.offer.redcId,
+    listingId: bodyJson.offer.listingId,
+    mlhPropertyId: bodyJson.offer.mlhPropertyId,
+    eventId: bodyJson.offer.eventId,
+    percentComplete: bodyJson.offer.percentComplete,
+    winningBidUser: bodyJson.offer.winningBidUser,
+    status: bodyJson.offer.status,
 }
-]]></ee:set-payload>
-			</ee:message>
+]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="20f90110-2f65-4569-8cda-596f636f4346" name="getSalesforceToken"/>
 		<flow-ref doc:name="Flow Reference" doc:id="4bed21da-3fa9-41b6-8caf-ea50845f6108" name="CallOfferValidationEndpoint" />
 		<logger level="INFO" doc:name="Log JSON message content" doc:id="24b5c333-e2e2-4fa4-bed1-f6fc58ebab5e" message="#[payload]"/>			
 	</flow>
