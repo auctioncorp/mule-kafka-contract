@@ -17,26 +17,12 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 		<set-variable value="#[vars.offerMapping.status]" doc:name="Set Variable For endpoint direction" doc:id="4fb45d00-3344-48f0-b08c-435bf61abb88" variableName="offerValidation" />
 		<try doc:name="Try" doc:id="061bbf2f-d1ab-4d11-aa35-8cec52246a09" >
 			<choice doc:name="Choice" doc:id="6d925c60-2a0c-4c60-9b4f-84f85ab321cb">
-			<when expression="#[(vars.offerMapping.status != null) and (['REVIEW', 'COMPLETE', 'CONTRACT_SENT', 'CONTRACT_RECEIVED'] contains (vars.offerMapping.status))]">
-				<http:request method="POST" doc:name="POST to Salesforce Offer Contract" doc:id="d1659eee-fda9-445a-aa14-2db335c222a8" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/adc/v1/offer"]'>
-					<http:body><![CDATA[#[%dw 2.0
-				output application/json indent=false
-				---
-				read(payload.data.payload.Request_Body__c,"application/json")]]]></http:body>
-					<http:headers><![CDATA[#[output application/java
-				---
-				{
-					"Content-Type" : "application/json"
-				}]]]></http:headers>
-				</http:request>
-				<logger level="INFO" doc:name="Log JSON message result" doc:id="aa84bf31-7fe0-4dd0-8fa8-8ba0e40c62de" message="#[payload]" />
-			</when>
-			<otherwise>
-				<http:request method="POST" doc:name="POST to Salesforce Offer Validation" doc:id="dcb6fe90-e150-469f-a6a1-3e60874b5ccf" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/services/apexrest/adc/v1/offer"]'>
+			<when expression="#[(vars.offerMapping.offerValidation != null) and (['REVIEW', 'COMPLETE', 'CONTRACT_SENT', 'CONTRACT_RECEIVED'] contains (vars.offerMapping.status))]">
+				<http:request method="POST" doc:name="POST to Salesforce Offer Contract" doc:id="d1659eee-fda9-445a-aa14-2db335c222a8" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/adc/v1/offer-contract"]'>
 					<http:body><![CDATA[#[%dw 2.0
 output application/json indent=false
 ---
-vars.offerMapping]]]></http:body>
+vars.offerMapping.data]]]></http:body>
 					<http:headers><![CDATA[#[output application/java
 				---
 				{
@@ -44,7 +30,25 @@ vars.offerMapping]]]></http:body>
 					"Authorization" : "Bearer " ++ vars.SFDCTokenInfo.access_token
 				}]]]></http:headers>
 				</http:request>
-				<logger level="INFO" doc:name="Log JSON message result" doc:id="95aad9a7-9d52-4635-a818-a61e9c1e9ee6" message="#[payload]" />
+				<logger level="INFO" doc:name="Log JSON message result" doc:id="aa84bf31-7fe0-4dd0-8fa8-8ba0e40c62de" message="#[payload]" />
+			</when>
+			<when expression="#[(vars.offerMapping.offerValidation == null)]">
+					<http:request method="POST" doc:name="POST to Salesforce Offer Validation" doc:id="dcb6fe90-e150-469f-a6a1-3e60874b5ccf" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/services/apexrest/adc/v1/offer"]'>
+					<http:body><![CDATA[#[%dw 2.0
+output application/json indent=false
+---
+vars.offerMapping.data]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+				---
+				{
+					"Content-Type" : "application/json",
+					"Authorization" : "Bearer " ++ vars.SFDCTokenInfo.access_token
+				}]]]></http:headers>
+				</http:request>
+					<logger level="INFO" doc:name="Log JSON message result" doc:id="95aad9a7-9d52-4635-a818-a61e9c1e9ee6" message="#[payload]" />
+				</when>
+				<otherwise>
+					<logger level="INFO" doc:name="Logger" doc:id="f2b325bd-44d2-43cd-b2fd-3bd10921ec4c" message="#['OFFER NOT PUSHED' ++ vars.offerMapping.offerId ++ ' IN STATUS ' ++ vars.offerMapping.status ++ ' VALIDATION ' ++ vars.offerMapping.offerValidation]"/>
 			</otherwise>
 		</choice>
 			<error-handler >
@@ -105,16 +109,35 @@ output application/json
 var bodyJson  = read (payload, "application/json")
 ---
 {
-    offerId: bodyJson.offer.offerId,
-    redcId: bodyJson.offer.redcId,
-    listingId: bodyJson.offer.listingId,
-    mlhPropertyId: bodyJson.offer.mlhPropertyId,
-    eventId: bodyJson.offer.eventId,
-    percentComplete: bodyJson.offer.percentComplete,
-    winningBidUser: bodyJson.offer.winningBidUser,
+	data : {
+		offerId: bodyJson.offer.offerId,
+		redcId: bodyJson.offer.redcId,
+		listingId: bodyJson.offer.listingId,
+		mlhPropertyId: bodyJson.offer.mlhPropertyId,
+		eventId: bodyJson.offer.eventId,
+		percentComplete: bodyJson.offer.percentComplete,
+		winningBidUser: bodyJson.offer.winningBidUser,
+		winningBidTime : bodyJson.offer.winningBidTime,
+		winningBidAmount : bodyJson.offer.winningBidAmount,
+		offerValidationData : bodyJson.offer.offerValidationData,
+		communicationMethod : bodyJson.offer.communicationMethod,                 
+		communicationTime : bodyJson.offer.communicationTime,
+		licensedAgentFlag : bodyJson.offer.licensedAgentFlag,                   
+		homestepsAgentBrokerFlag : bodyJson.offer.homestepsAgentBrokerFlag,            
+		freddieHomestepsEmployeeFlag : bodyJson.offer.freddieHomestepsEmployeeFlag,        
+		freddieHomestepsEmployeeRelativeFlag : bodyJson.offer.freddieHomestepsEmployeeRelativeFlag,
+		freddieHomestepsVendorFlag : bodyJson.offer.freddieHomestepsVendorFlag,          
+		freddieHomestepsManagerFlag : bodyJson.offer.freddieHomestepsManagerFlag,
+		relatedToOwnerFlag : bodyJson.offer.relatedToOwnerFlag,
+		previousMortgagorFlag : bodyJson.offer.previousMortgagorFlag,
+		priorFnmaPurchaseFlag : bodyJson.offer.priorFnmaPurchaseFlag,
+		priorFreddiePurchaseFlag : bodyJson.offer.priorFreddiePurchaseFlag,           
+		sellerEscrowCompanyFlag : bodyJson.offer.sellerEscrowCompanyFlag,
+		sellerEscrowCompanyName : bodyJson.offer.sellerEscrowCompanyName
+	},
     status: bodyJson.offer.status,
-}
-]]></ee:set-variable>
+    offerValidation : bodyJson.offer.offerValidation
+}]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="20f90110-2f65-4569-8cda-596f636f4346" name="getSalesforceToken"/>
