@@ -10,8 +10,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
-	<global-property doc:name="Global Property" doc:id="34e4b6bb-e901-4430-af89-38e22c157201" name="env" value="local" />
-	<global-property doc:name="Global Property" doc:id="17fa8993-6a8c-4c62-84ba-774ee01b3bde" name="key" value="apisero" />
+
 	<os:object-store name="Token_object_store" doc:name="Object store" doc:id="94b6b011-d7e7-4612-9294-9d00d57ee409" maxEntries="60000" expirationInterval="3200" expirationIntervalUnit="SECONDS" entryTtl="1200"/>
 	<sub-flow name="getSalesforceTokenContract" doc:id="9900e7df-956b-4482-8c25-b2983a70cb32">
 			<choice doc:name="Choice" doc:id="20d0b662-71e6-4345-a0b0-19c34f7dd40b">
