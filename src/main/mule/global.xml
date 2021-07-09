@@ -24,7 +24,7 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 			</reconnection>
 		</salesforce:basic-connection>
 	</salesforce:sfdc-config>
-	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="aafaefe4-4f42-4dbc-b39f-ec095e7a0fb1" >
+	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="aafaefe4-4f42-4dbc-b39f-ec095e7a0fb1" ackMode="IMMEDIATE">
 		<kafka:consumer-plaintext-connection >
 			<kafka:bootstrap-servers >
 				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />
@@ -35,7 +35,7 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 			</kafka:topic-patterns>
 		</kafka:consumer-plaintext-connection>
 	</kafka:consumer-config>
-		<kafka:consumer-config name="Apache_Kafka_Consumer_configuration_Contract" doc:name="Apache Kafka Consumer configuration Contract" doc:id="17badd21-70ea-433c-8cc6-2848c58f9bb5" >
+		<kafka:consumer-config name="Apache_Kafka_Consumer_configuration_Contract" doc:name="Apache Kafka Consumer configuration Contract" doc:id="17badd21-70ea-433c-8cc6-2848c58f9bb5" ackMode="IMMEDIATE">
 		<kafka:consumer-plaintext-connection >
 			<kafka:bootstrap-servers >
 				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />

@@ -1,21 +1,5 @@
 package com.auction.sfdc.contract.transform;
 
-/*
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.avro.file.DataFileStream;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.Decoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificDatumReader;
-import org.mule.api.MuleMessage;
-import org.mule.api.transformer.TransformerException;
-import org.apache.kafka.common.serialization.StringSerializer;
-*/
-
 import org.mule.transformer.AbstractMessageTransformer;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
@@ -28,7 +12,7 @@ public abstract class Transformer  extends AbstractMessageTransformer{
 	
 	public static String parseIncoming(final byte[] b, final String schemaRegistryURL) {
 		System.out.println ( "schemaRegistryURL: " + schemaRegistryURL );
-        final SchemaRegistryClient client = (SchemaRegistryClient)new CachedSchemaRegistryClient(schemaRegistryURL, 3);
+        final SchemaRegistryClient client = (SchemaRegistryClient)new CachedSchemaRegistryClient(schemaRegistryURL, 100);
         final KafkaAvroDeserializer des = new KafkaAvroDeserializer(client);
         Object o = null;
         try {
@@ -47,7 +31,7 @@ public abstract class Transformer  extends AbstractMessageTransformer{
 	
 	public static String createOutbound(final String jsonBody, final String schemaRegistryURL) {
 		System.out.println ( "schemaRegistryURL: " + schemaRegistryURL );
-        final SchemaRegistryClient client = (SchemaRegistryClient)new CachedSchemaRegistryClient(schemaRegistryURL, 3);
+        final SchemaRegistryClient client = (SchemaRegistryClient)new CachedSchemaRegistryClient(schemaRegistryURL, 100);
         final KafkaAvroSerializer des = new KafkaAvroSerializer(client);
         Object o = null;
         try {
