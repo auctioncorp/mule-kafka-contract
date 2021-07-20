@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+	<os:object-store name="Token_object_store" doc:name="Object store" doc:id="94b6b011-d7e7-4612-9294-9d00d57ee409" maxEntries="60000" expirationInterval="3200" expirationIntervalUnit="SECONDS" entryTtl="1200"/>
+	<sub-flow name="getSalesforceTokenContract" doc:id="9900e7df-956b-4482-8c25-b2983a70cb32">
+			<choice doc:name="Choice" doc:id="20d0b662-71e6-4345-a0b0-19c34f7dd40b">
+				<when expression='#[vars.SFDCTokenInfo == null]'>
+					<http:request method="POST" doc:name="Access Token Request" doc:id="445d9fe5-ae18-4d51-b1f1-3a6788157856" outputMimeType="application/json" target="SFDCTokenInfo" config-ref="Salesforce_Token" path="${salesforce.token.path}">
+				<http:body><![CDATA[#[output application/x-www-form-urlencoded --- {'grant_type':'password', 'client_id':'${sfdc.client}', 'client_secret':'${sfdc.secret}', 'username':'${sfdc.username}', 'password':'${secure::sfdc.password}${sfdc.securityToken}'}]]]></http:body>
+				<http:headers><![CDATA[#[output application/java
+					---
+					{
+						"Content-Type" : "application/x-www-form-urlencoded"
+					}]]]>
+					</http:headers>
+				</http:request>
+					<os:store doc:name="Store Token" doc:id="e4d335ad-fb37-42c1-a5f9-0dd4791716a5" key="salesforce-token" objectStore="Token_object_store_offer">
+				<os:value><![CDATA[#[vars.SFDCTokenInfo]]]></os:value>
+			</os:store>
+				<logger level="INFO" doc:name="Logger" doc:id="a419282e-8e08-4d0a-8dc3-21b2666c0edd" message='#["Token Stored at: " ++ now()]' />
+				
+	</when>
+			<otherwise >
+				<os:retrieve doc:name="Retrieve" doc:id="17611914-8c37-44ab-8b15-eb6d1ecd4d63" key="salesforce-token" objectStore="Token_object_store_offer" target="SFDCTokenInfo">
+					<os:default-value ><![CDATA[#[null]]]></os:default-value>
+				</os:retrieve>
+			</otherwise>
+			</choice>
+		</sub-flow>
+	<flow name="kafka-sfdc-contract-flow" doc:id="49287344-f6ba-4ac6-b002-90e42d95a477" >
+		<kafka:message-listener doc:name="Message listener" doc:id="652ca685-fbea-45f6-9791-f4a0172bc4df" config-ref="Apache_Kafka_Consumer_configuration_Contract">
+		</kafka:message-listener>
+		<logger level="INFO" doc:name="Logger" doc:id="00110947-e466-4aaa-a2be-6cf27cd3c382" message="#[payload]"/>
+		<logger level="INFO" doc:name="Log serialized input" doc:id="ee6bb5a1-480f-4c7d-a728-263813c04e1d" message='#[%dw 2.0
+import * from dw::core::Binaries
+output application/json
+var myBinary = payload as Binary { class: "byte[]"}
+---
+toHex(myBinary)]'/>
+<set-variable value="${morpheus.registry}" doc:name="Set invocation params" doc:id="f2d6a582-fe95-4255-9a94-85ccde763ed4" variableName="schemaRegistryURL" />
+<java:invoke-static doc:name="Deserialize Object with schema registry" doc:id="e6d89bee-9433-4124-8fcd-bfead63dbd39" class="com.auction.sfdc.contract.transform.Transformer" method="parseIncoming(byte[],java.lang.String)">
+			<java:args ><![CDATA[#[{
+	arg0: payload as Binary { class: "byte[]"},
+	arg1: vars.schemaRegistryURL as String 
+}]]]></java:args>
+		</java:invoke-static>
+		<ee:transform doc:name="Convert to JSON" doc:id="b8996879-e884-43d7-b3cf-c0ad92ddd0cf" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="offerMapping" ><![CDATA[%dw 2.0
+output application/json
+var bodyJson  = read (payload, "application/json")
+---
+{
+	data : {
+		offerId: bodyJson.offerId,
+		redcId: bodyJson.onlineContractFields.redcId,
+		contractId: bodyJson.onlineContractFields.contractId,
+		listingId: bodyJson.onlineContractFields.listingId,
+		mlhPropertyId: bodyJson.onlineContractFields.mlhPropertyId,
+		eventId: bodyJson.onlineContractFields.eventId,
+		percentComplete: bodyJson.onlineContractFields.percentComplete,
+		winningBidUser: bodyJson.onlineContractFields.winningBidUser,
+		winningBidTime : bodyJson.onlineContractFields.winningBidTime,
+		winningBidAmount : bodyJson.onlineContractFields.winningBidAmount,
+		offerValidationData : bodyJson.onlineContractFields.offerValidationData,
+		communicationMethod : bodyJson.onlineContractFields.communicationMethod,                 
+		communicationTime : bodyJson.onlineContractFields.communicationTime,
+		licensedAgentFlag : bodyJson.onlineContractFields.licensedAgentFlag,                   
+		homestepsAgentBrokerFlag : bodyJson.onlineContractFields.homestepsAgentBrokerFlag,            
+		freddieHomestepsEmployeeFlag : bodyJson.onlineContractFields.freddieHomestepsEmployeeFlag,        
+		freddieHomestepsEmployeeRelativeFlag : bodyJson.onlineContractFields.freddieHomestepsEmployeeRelativeFlag,
+		freddieHomestepsVendorFlag : bodyJson.onlineContractFields.freddieHomestepsVendorFlag,          
+		freddieHomestepsManagerFlag : bodyJson.onlineContractFields.freddieHomestepsManagerFlag,		
+		relatedToOwnerFlag : bodyJson.onlineContractFields.relatedToOwnerFlag,
+		previousMortgagorFlag : bodyJson.onlineContractFields.previousMortgagorFlag		
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="20f90110-2f65-4569-8cda-596f636f4346" name="getSalesforceTokenContract"/>
+		<http:request method="POST" doc:name="POST to Salesforce Offer Contract" doc:id="d1659eee-fda9-445a-aa14-2db335c222a8" config-ref="Salesforce_HTTP_Config" outputMimeType="application/json" sendBodyMode="ALWAYS" requestStreamingMode="NEVER" url='#[vars.SFDCTokenInfo.instance_url ++ "/adc/v1/offer-contract"]'>
+					<http:body><![CDATA[#[%dw 2.0
+output application/json indent=false
+---
+vars.offerMapping.data]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+				---
+				{
+					"Content-Type" : "application/json",
+					"Authorization" : "Bearer " ++ vars.SFDCTokenInfo.access_token
+				}]]]></http:headers>
+				</http:request>
+		<logger level="INFO" doc:name="Log JSON message result" doc:id="aa84bf31-7fe0-4dd0-8fa8-8ba0e40c62de" message="#[payload]" />			
+	</flow>
+</mule>
