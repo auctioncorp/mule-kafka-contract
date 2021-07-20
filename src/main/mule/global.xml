@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka" xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
 	xmlns:slack="http://www.mulesoft.org/schema/mule/slack" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -11,16 +10,47 @@ http://www.mulesoft.org/schema/mule/slack http://www.mulesoft.org/schema/mule/sl
 http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
-
-	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="aafaefe4-4f42-4dbc-b39f-ec095e7a0fb1" >
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="208558dc-0be1-42a4-99ce-ca543d6cb783" file="properties/${env}-secure.properties" key="${key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="46f71d39-ef7c-4057-ab7e-344c5fdbf9b0" file="properties/${env}.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="3ce27288-4409-473c-8757-3f07599bb526" file="properties/logging.yaml" />
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="5a784edb-0259-4544-9205-67325b4aaf19" >
+		<salesforce:basic-connection username="${sfdc.username}" password="${secure::sfdc.password}" securityToken="${sfdc.securityToken}" url="${sfdc.url}" >
+			<reconnection >
+				<reconnect-forever frequency="10000" />
+			</reconnection>
+		</salesforce:basic-connection>
+	</salesforce:sfdc-config>
+	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="d47d6832-9e05-4e9e-b330-f5d3d6ecc9ec" ackMode="IMMEDIATE">
 		<kafka:consumer-plaintext-connection >
 			<kafka:bootstrap-servers >
-				<kafka:bootstrap-server value="b-1.ci.glwiz1.c2.kafka.us-west-2.amazonaws.com:9092" />
-				<kafka:bootstrap-server value="b-2.ci.glwiz1.c2.kafka.us-west-2.amazonaws.com:9092" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.2}" />
 			</kafka:bootstrap-servers>
 			<kafka:topic-patterns >
 				<kafka:topic-pattern value="resi-offers" />
 			</kafka:topic-patterns>
 		</kafka:consumer-plaintext-connection>
 	</kafka:consumer-config>
+		<kafka:consumer-config name="Apache_Kafka_Consumer_configuration_Contract" doc:name="Apache Kafka Consumer configuration Contract" doc:id="0b61ec1d-3207-4a44-a657-fafeb4900fb1" ackMode="IMMEDIATE">
+		<kafka:consumer-plaintext-connection >
+			<kafka:bootstrap-servers >
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.1}" />
+				<kafka:bootstrap-server value="${kafka.bootstrap.server.2}" />
+			</kafka:bootstrap-servers>
+			<kafka:topic-patterns >
+				<kafka:topic-pattern value="resi-contracts" />
+			</kafka:topic-patterns>
+		</kafka:consumer-plaintext-connection>
+	</kafka:consumer-config>
+	<http:request-config name="Salesforce_HTTP_Config" doc:name="Salesforce_HTTP_Config" doc:id="e61bf8a4-3498-441a-ba60-f214d8660a67" responseTimeout="90000">
+		<http:request-connection protocol="HTTPS"/>
+		<http:default-headers >
+			<http:default-header key="Authorization" value="#[vars.AccessToken]" />
+		</http:default-headers>
+	</http:request-config>
+	<http:request-config name="Salesforce_Token" doc:name="Salesforce_Token" doc:id="613f37be-5a95-4676-935c-36a8023ab70d" responseTimeout="90000">
+		<http:request-connection usePersistentConnections="false" protocol="HTTPS" host="${salesforce.token.host}"/>
+	</http:request-config>	
 </mule>
